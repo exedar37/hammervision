@@ -1,0 +1,197 @@
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const pool = require('./db'); // Import the pool object from db.js
+
+const app = express();
+
+app.use(cors());
+app.use(bodyParser.json());
+
+
+// Reports CRUD with PostgreSQL
+app.get('/reports', async (req, res) => {
+    try {
+        const allReports = await pool.query("SELECT * FROM reports");
+        res.json(allReports.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+app.post('/reports', async (req, res) => {
+    try {
+        const { report_data } = req.body; // Assuming your report has 'report_data'
+        const newReport = await pool.query(
+            "INSERT INTO reports (report_data) VALUES ($1) RETURNING *",
+            [report_data]
+        );
+        res.json(newReport.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
+app.put('/reports/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { report_data } = req.body;
+        const updateReport = await pool.query(
+            "UPDATE reports SET report_data = $1 WHERE id = $2",
+            [report_data, id]
+        );
+        res.json("Report was updated!");
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
+app.delete('/reports/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await pool.query("DELETE FROM reports WHERE id = $1", [id]);
+        res.json("Report was deleted!");
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
+// Observables CRUD with PostgreSQL
+app.get('/observables', async (req, res) => {
+    try {
+        const allObservables = await pool.query("SELECT * FROM observables");
+        res.json(allObservables.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+app.post('/observables', async (req, res) => {
+    try {
+        const { observable_data } = req.body; // assuming there's observables data
+        const newObservable = await pool.query(
+            "INSERT INTO observables (observable_data) VALUES ($1) RETURNING *",
+            [observable_data]
+        );
+        res.json(newObservable.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
+app.put('/observables/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { observable_data } = req.body;
+        const updateObservable = await pool.query(
+            "UPDATE observables SET observable_data = $1 WHERE id = $2",
+            [observable_data, id]
+        );
+        res.json("Observable was updated!");
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
+app.delete('/observables/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await pool.query("DELETE FROM observables WHERE id = $1", [id]);
+        res.json("Observable was deleted!");
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
+// Detections CRUD with PostgreSQL
+app.get('/detections', async (req, res) => {
+    try {
+        const allDetections = await pool.query("SELECT * FROM detections");
+        res.json(allDetections.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+app.post('/detections', async (req, res) => {
+    try {
+        const { detection_data } = req.body; // assuming there's observables data
+        const newDetection = await pool.query(
+            "INSERT INTO detections (detection_data) VALUES ($1) RETURNING *",
+            [detection_data]
+        );
+        res.json(newDetection.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
+app.put('/detections/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { detection_data } = req.body;
+        const updateDetection = await pool.query(
+            "UPDATE detections SET detection_data = $1 WHERE id = $2",
+            [detection_data, id]
+        );
+        res.json("Detection was updated!");
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
+app.delete('/detections/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await pool.query("DELETE FROM detections WHERE id = $1", [id]);
+        res.json("Detection was deleted!");
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
+// TTPs CRUD with PostgreSQL
+app.get('/ttps', async (req, res) => {
+    try {
+        const allTTPs = await pool.query("SELECT * FROM ttps");
+        res.json(allTTPs.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+app.post('/ttps', async (req, res) => {
+    try {
+        const { ttp_data } = req.body; // assuming there's observables data
+        const newTTP = await pool.query(
+            "INSERT INTO ttps (ttp_data) VALUES ($1) RETURNING *",
+            [ttp_data]
+        );
+        res.json(newTTP.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
+app.put('/ttps/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { ttp_data } = req.body;
+        const updateTTP = await pool.query(
+            "UPDATE ttps SET ttp_data = $1 WHERE id = $2",
+            [ttp_data, id]
+        );
+        res.json("TTP was updated!");
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
+app.delete('/ttps/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await pool.query("DELETE FROM ttps WHERE id = $1", [id]);
+        res.json("TTP was deleted!");
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+module.exports = app; // Export the app
+
+
