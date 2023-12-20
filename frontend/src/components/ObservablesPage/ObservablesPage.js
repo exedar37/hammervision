@@ -109,7 +109,7 @@ const ObservablesPage = () => {
     });
 
     return (
-        <Container>
+        <Container >
             <Typography variant="h4" gutterBottom>Observables</Typography>
             <Button variant="contained" color="primary" component={Link} to="/observables/add">
                 Add New Observable

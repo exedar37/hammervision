@@ -1,46 +1,50 @@
 import { createTheme } from '@mui/material/styles';
-import { lime, purple } from '@mui/material/colors';
 
+// Define colors
+const primaryColor = '#1976d2'; // A shade of blue
+const secondaryColor = '#FFC107'; // Amber
 
-// Create a theme instance.
+// Create a theme instance
 const theme = createTheme({
   palette: {
-    primary: lime,
-    secondary: purple,
-    error: {
-      main: '#ff0000',  // Color for error states
+    primary: {
+      main: primaryColor,
+    },
+    secondary: {
+      main: secondaryColor,
     },
     background: {
-      default: '##5850b9',  // Background color for the application
+      default: '#f4f5f7', // Light gray for background
+    },
+    text: {
+      primary: '#333', // Dark gray for primary text
+      secondary: '#555', // Slightly lighter for secondary text
     },
   },
   typography: {
-    // Define your typography adjustments here
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    h1: {
+      fontSize: '2rem',
+      fontWeight: 500,
+    },
     h2: {
-      fontSize: '2rem',
-      color: '#333333',  // Example color for h1 elements
+      fontSize: '1.75rem',
+      fontWeight: 500,
     },
-    h6: {
-      fontSize: '2rem',
-      color: '#03396c'
-    },
-    body1: {
-      fontSize: '1rem',
-      color: '#666666',  // Example color for body text
-    },
+    // You can add more typography styles here
   },
-  // You can also define additional styles for components
   components: {
+    // Custom styles for components
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 5, // Rounded button borders
-          // Other style overrides for buttons
+          textTransform: 'none', // Buttons with regular case text
         },
       },
     },
-    // Additional component overrides can go here
+    // Add other component customizations if needed
   },
+  // Add other theme customizations if needed
 });
 
 export default theme;

@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container'; // Import Container component
 
+
 // Import your page components
 import HomePage from './components/HomePage/HomePage';
 import ReportsPage from './components/ReportsPage/ReportsPage';
@@ -23,21 +24,20 @@ import theme from './theme'; // Ensure this path is correct
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
       <Router>
         <AppBar position="static">
           <Toolbar>
             <Typography variant="h6" style={{ flexGrow: 1 }}>
               Hammervision
             </Typography>
-            <Button color="inherit" component={Link} to="/">Home</Button>
-            <Button color="inherit" component={Link} to="/reports">Reports</Button>
-            <Button color="inherit" component={Link} to="/observables">Observables</Button>
-            <Button color="inherit" component={Link} to="/detections">Detections</Button>
-            <Button color="inherit" component={Link} to="/threat-stages">Threat Stages</Button>
+              <Button color="inherit" component={Link} to="/">Home</Button>
+              <Button color="inherit" component={Link} to="/reports">Reports</Button>
+              <Button color="inherit" component={Link} to="/observables">Observables</Button>
+              <Button color="inherit" component={Link} to="/detections">Detections</Button>
+              <Button color="inherit" component={Link} to="/threat-stages">Threat Stages</Button>
           </Toolbar>
         </AppBar>
-        <Container style={{ marginTop: '20px' }}> {/* Adjust margin as needed */}
+        <Container sx={{ marginTop: '20px', backgroundColor: theme.palette.background.default }}>
           <Routes>
             <Route exact path="/" element={<HomePage />} />
             <Route exact path="/reports" element={<ReportsPage />} />
@@ -55,7 +55,6 @@ function App() {
           </Routes>
         </Container>
       </Router>
-    </ThemeProvider>
   );
 }
 

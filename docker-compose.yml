@@ -4,7 +4,7 @@ services:
     build: 
       context: ./frontend
     ports:
-      - "127.0.0.1:8080:80"
+      - "8080:80"
     depends_on:
       - backend
 
@@ -15,7 +15,7 @@ services:
     environment:
       - DATABASE_URL=postgres://user:password@db:5432/hammervision
     ports:
-      - "127.0.0.1:3001:3001"
+      - "3001:3001"
     depends_on:
       - db
 
@@ -28,7 +28,7 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
     ports:
-      - "127.0.0.1:5432:5432"
+      - "5432:5432"
 
   backend-test:
     build:
