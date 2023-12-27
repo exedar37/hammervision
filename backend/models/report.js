@@ -19,16 +19,10 @@ Report.init({
     type: DataTypes.STRING,
     allowNull: false
   },
-  dateOfAddition: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW
-  },
   publicationDate: {
-    type: DataTypes.DATE
+    type: DataTypes.DATEONLY
   },
-  updatedDate: {
-    type: DataTypes.DATE
-  },
+  //id, sourceOrganization, title, dateofAddition, publicationDate, updatedDate
   // The column for links to ThreatStage objects will be handled via associations
 }, {
   sequelize,

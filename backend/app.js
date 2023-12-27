@@ -84,8 +84,25 @@ app.get('/observables/:id', async (req, res) => {
 // Detection Routes
 app.get('/detections', async (req, res) => {
     try {
-        const detections = await Detection.findAll();
+        const detections = await Detection.findAll({
+            include: [Observable]
+        });
         res.json(detections);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+});
+
+app.get('/detections/:id', async (req, res) => {
+    try {
+        const detection = await Detection.findByPk(req.params.id, {
+            include: [Observable]
+        });
+        if (detection) {
+            res.json(detection);
+        } else {
+            res.status(404).send('Detection not found');
+        }
     } catch (error) {
         res.status(500).send(error.message);
     }
@@ -99,17 +116,43 @@ app.post('/detections', async (req, res) => {
         res.status(400).send(error.message);
     }
 });
+
 app.put('/detections/:id', async (req, res) => {
     try {
-        await Detection.update(req.body, {
-            where: { id: req.params.id }
+        const { id } = req.params;
+        const { name, description, severity, observables } = req.body;
+
+        // Find or create the Detection
+        let detection = await Detection.findByPk(id);
+        if (!detection) {
+            return res.status(404).send('Detection not found');
+        }
+
+        // Update Detection details
+        await detection.update({ name, description, severity });
+
+        // Update Observables associations
+        const observableInstances = await Promise.all(
+            observables.map(async observable => {
+                return await Observable.findByPk(observable.id) || await Observable.create(observable);
+            })
+        );
+        
+        await detection.setObservables(observableInstances);
+
+        // Fetch updated Detection with Observables
+        const updatedDetection = await Detection.findByPk(id, {
+            include: [Observable]
         });
-        const updatedDetection = await Detection.findByPk(req.params.id);
+
         res.json(updatedDetection);
     } catch (error) {
-        res.status(400).send(error.message);
+        console.error(error);
+        res.status(500).send(error.message);
     }
 });
+
+
 app.delete('/detections/:id', async (req, res) => {
     try {
         await Detection.destroy({
@@ -125,8 +168,25 @@ app.delete('/detections/:id', async (req, res) => {
 // ThreatStage Routes
 app.get('/threat-stages', async (req, res) => {
     try {
-        const threatStages = await ThreatStage.findAll();
+        const threatStages = await ThreatStage.findAll({
+            include: [Observable]
+        });
         res.json(threatStages);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+});
+
+app.get('/threat-stages/:id', async (req, res) => {
+    try {
+        const threatStage = await ThreatStage.findByPk(req.params.id, {
+            include: [Observable]
+        });
+        if (threatStage) {
+            res.json(threatStage);
+        } else {
+            res.status(404).send('Threat Stage not found');
+        }
     } catch (error) {
         res.status(500).send(error.message);
     }
@@ -142,13 +202,36 @@ app.post('/threat-stages', async (req, res) => {
 });
 app.put('/threat-stages/:id', async (req, res) => {
     try {
-        await ThreatStage.update(req.body, {
-            where: { id: req.params.id }
+        const { id } = req.params;
+        const { name, description, mitreAttackTechnique, observables } = req.body;
+        //id, name, description, mitreAttackTechnique
+        // Find or create the ThreatStage
+        let threatStage = await ThreatStage.findByPk(id);
+        if (!threatStage) {
+            return res.status(404).send('Threat Stage not found');
+        }
+
+        // Update ThreatStage details
+        await threatStage.update({ name, description, mitreAttackTechnique });
+
+        // Update ThreatStage associations
+        const observableInstances = await Promise.all(
+            observables.map(async observable => {
+                return await Observable.findByPk(observable.id) || await Observable.create(observable);
+            })
+        );
+        
+        await threatStage.setObservables(observableInstances);
+
+        // Fetch updated ThreatStage with Observables
+        const updatedThreatStage = await ThreatStage.findByPk(id, {
+            include: [Observable]
         });
-        const updatedThreatStage = await ThreatStage.findByPk(req.params.id);
+
         res.json(updatedThreatStage);
     } catch (error) {
-        res.status(400).send(error.message);
+        console.error(error);
+        res.status(500).send(error.message);
     }
 });
 app.delete('/threat-stages/:id', async (req, res) => {
@@ -165,7 +248,9 @@ app.delete('/threat-stages/:id', async (req, res) => {
 // Report Routes
 app.get('/reports', async (req, res) => {
     try {
-        const reports = await Report.findAll();
+        const reports = await Report.findAll({
+            include:[ThreatStage]
+        });
         res.json(reports);
     } catch (error) {
         res.status(500).send(error.message);
@@ -182,13 +267,29 @@ app.post('/reports', async (req, res) => {
 });
 app.put('/reports/:id', async (req, res) => {
     try {
-        await Report.update(req.body, {
-            where: { id: req.params.id }
+        const reportData = req.body;
+        const threatStageIds = reportData.threatStages.map(ts => ts.id);
+
+        // Update report details
+        await Report.update(reportData, { where: { id: req.params.id } });
+
+        // Find the report
+        const report = await Report.findByPk(req.params.id);
+
+        // Update associated threat stages
+        if (report) {
+            await report.setThreatStages(threatStageIds);
+        }
+
+        // Fetch the updated report with associated threat stages
+        const updatedReport = await Report.findByPk(req.params.id, {
+            include: [ThreatStage] // Make sure this association is set up in your models
         });
-        const updatedReport = await Report.findByPk(req.params.id);
+
         res.json(updatedReport);
     } catch (error) {
-        res.status(400).send(error.message);
+        console.error('Error updating report:', error);
+        res.status(500).send(error.message);
     }
 });
 app.delete('/reports/:id', async (req, res) => {
@@ -197,6 +298,18 @@ app.delete('/reports/:id', async (req, res) => {
             where: { id: req.params.id }
         });
         res.status(204).send();
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+});
+app.get('/reports/:id', async (req, res) => {
+    try {
+        const report = await Report.findByPk(req.params.id);
+        if (report) {
+            res.json(report);
+        } else {
+            res.status(404).send('Report not found');
+        }
     } catch (error) {
         res.status(500).send(error.message);
     }
