@@ -29,7 +29,18 @@ const ThreatStagesPage = () => {
                         <ListItem alignItems="flex-start">
                             <ListItemText
                                 primary={threatStage.name}
-                                secondary={<Typography variant="body2">{threatStage.description}</Typography>}
+                                secondary={
+                                    <>
+                                        <Typography component="span" variant="body2" color="textPrimary">
+                                            {threatStage.description}
+                                        </Typography>
+                                        {threatStage.observables && threatStage.observables.map(observable => (
+                                            <Typography key={observable.id} variant="body2">
+                                                {observable.value}
+                                            </Typography>
+                                        ))}
+                                    </>
+                                }
                             />
                             <Link to={`/threat-stages/edit/${threatStage.id}`}>Edit</Link>
                         </ListItem>

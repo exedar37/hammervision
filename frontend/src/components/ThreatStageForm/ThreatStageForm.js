@@ -31,7 +31,7 @@ const ThreatStageForm = () => {
                 if (id) {
                     try {
                         const response = await axios.get(`/threat-stages/${id}`);
-                        response.data.observables = response.data.Observables || [];
+                        response.data.observables = response.data.observables || [];
                         setThreatStage(response.data);
                     } catch (error) {
                         console.error("Error fetching threat stage: ", error);

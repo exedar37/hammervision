@@ -22,7 +22,6 @@ Report.init({
   publicationDate: {
     type: DataTypes.DATEONLY
   },
-  //id, sourceOrganization, title, dateofAddition, publicationDate, updatedDate
   // The column for links to ThreatStage objects will be handled via associations
 }, {
   sequelize,

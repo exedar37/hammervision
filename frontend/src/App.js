@@ -17,6 +17,7 @@ import DetectionsPage from './components/DetectionsPage/DetectionsPage';
 import DetectionForm from './components/DetectionForm/DetectionForm';
 import ThreatStagesPage from './components/ThreatStagesPage/ThreatStagesPage';
 import ThreatStageForm from './components/ThreatStageForm/ThreatStageForm';
+import ThreatDiagram  from './components/ThreatReportDiagram/ThreatReportDiagram';
 
 // You can customize the theme or direct styles here
 import { ThemeProvider } from '@mui/material/styles';
@@ -43,6 +44,7 @@ function App() {
             <Route exact path="/reports" element={<ReportsPage />} />
             <Route path="/reports/add" element={<ReportForm />} />
             <Route path="/reports/edit/:id" element={<ReportForm />} />
+            <Route path="/reports/diagram/:reportId" element={<ThreatDiagram />} />
             <Route exact path="/observables" element={<ObservablesPage />} />
             <Route path="/observables/add" element={<ObservableForm />} />
             <Route path="/observables/edit/:id" element={<ObservableForm />} />

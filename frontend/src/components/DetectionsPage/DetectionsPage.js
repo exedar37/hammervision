@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from '../../axiosService'; // Adjust the path as necessary
+import axios from '../../axiosService';
+import { Typography, Paper, List, ListItem, ListItemText, Divider } from '@mui/material';
 
 const DetectionsPage = () => {
     const [detections, setDetections] = useState([]);
@@ -19,30 +20,35 @@ const DetectionsPage = () => {
     }, []);
 
     return (
-        <div>
-            <h1>Detections</h1>
+        <Paper style={{ padding: 16 }}>
+            <Typography variant="h4" style={{ marginBottom: 16 }}>Detections</Typography>
             <Link to="/detections/add">Add New Detection</Link>
-            <ul>
+            <List>
                 {detections.map(detection => (
-                    <li key={detection.id}>
-                        <h3>{detection.name}</h3>
-                        <p>{detection.description}</p>
-                        <p>{detection.severity}</p>
-                        <p>Observables:</p>
-                        <ul>
-                            {detection.Observables && detection.Observables.length > 0 ? (
-                                detection.Observables.map(observable => (
-                                    <li key={observable.id}>{observable.value}</li>
-                                ))
-                            ) : (
-                                <li>No observables associated</li>
-                            )}
-                        </ul>
-                        <Link to={`/detections/edit/${detection.id}`}>Edit</Link>
-                    </li>
+                    <React.Fragment key={detection.id}>
+                        <ListItem alignItems="flex-start">
+                            <ListItemText
+                                primary={detection.name}
+                                secondary={
+                                    <>
+                                        <Typography component="span" variant="body2" color="textPrimary">
+                                            {detection.description}
+                                        </Typography>
+                                        {detection.observables && detection.observables.map(observable => (
+                                            <Typography key={observable.id} variant="body2">
+                                                {observable.value}
+                                            </Typography>
+                                        ))}
+                                    </>
+                                }
+                            />
+                            <Link to={`/detections/edit/${detection.id}`}>Edit</Link>
+                        </ListItem>
+                        <Divider variant="inset" component="li" />
+                    </React.Fragment>
                 ))}
-            </ul>
-        </div>
+            </List>
+        </Paper>
     );
 };
 

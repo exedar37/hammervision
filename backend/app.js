@@ -85,7 +85,10 @@ app.get('/observables/:id', async (req, res) => {
 app.get('/detections', async (req, res) => {
     try {
         const detections = await Detection.findAll({
-            include: [Observable]
+            include: [{
+                model: Observable,
+                as: 'observables'
+            }]
         });
         res.json(detections);
     } catch (error) {
@@ -96,7 +99,10 @@ app.get('/detections', async (req, res) => {
 app.get('/detections/:id', async (req, res) => {
     try {
         const detection = await Detection.findByPk(req.params.id, {
-            include: [Observable]
+            include: [{
+                model: Observable,
+                as: 'observables'
+            }]
         });
         if (detection) {
             res.json(detection);
@@ -142,7 +148,10 @@ app.put('/detections/:id', async (req, res) => {
 
         // Fetch updated Detection with Observables
         const updatedDetection = await Detection.findByPk(id, {
-            include: [Observable]
+            include: [{
+                model: Observable,
+                as: 'observables'
+            }]
         });
 
         res.json(updatedDetection);
@@ -169,7 +178,10 @@ app.delete('/detections/:id', async (req, res) => {
 app.get('/threat-stages', async (req, res) => {
     try {
         const threatStages = await ThreatStage.findAll({
-            include: [Observable]
+            include: [{
+                model: Observable,
+                as: 'observables'
+            }]
         });
         res.json(threatStages);
     } catch (error) {
@@ -180,7 +192,10 @@ app.get('/threat-stages', async (req, res) => {
 app.get('/threat-stages/:id', async (req, res) => {
     try {
         const threatStage = await ThreatStage.findByPk(req.params.id, {
-            include: [Observable]
+            include: [{
+                model: Observable,
+                as: 'observables'
+            }]
         });
         if (threatStage) {
             res.json(threatStage);
@@ -225,7 +240,8 @@ app.put('/threat-stages/:id', async (req, res) => {
 
         // Fetch updated ThreatStage with Observables
         const updatedThreatStage = await ThreatStage.findByPk(id, {
-            include: [Observable]
+            model: Observable,
+            as: 'observables'
         });
 
         res.json(updatedThreatStage);
@@ -249,7 +265,7 @@ app.delete('/threat-stages/:id', async (req, res) => {
 app.get('/reports', async (req, res) => {
     try {
         const reports = await Report.findAll({
-            include:[ThreatStage]
+            include: [{ model: ThreatStage, as: 'threatStages' }]
         });
         res.json(reports);
     } catch (error) {
@@ -268,7 +284,8 @@ app.post('/reports', async (req, res) => {
 app.put('/reports/:id', async (req, res) => {
     try {
         const reportData = req.body;
-        const threatStageIds = reportData.threatStages.map(ts => ts.id);
+        const threatStageIds = Array.isArray(reportData.threatStages) ? reportData.threatStages.map(ts => ts.id) : [];
+
 
         // Update report details
         await Report.update(reportData, { where: { id: req.params.id } });
@@ -283,7 +300,7 @@ app.put('/reports/:id', async (req, res) => {
 
         // Fetch the updated report with associated threat stages
         const updatedReport = await Report.findByPk(req.params.id, {
-            include: [ThreatStage] // Make sure this association is set up in your models
+            include: [{ model: ThreatStage, as: 'threatStages' }]
         });
 
         res.json(updatedReport);
@@ -304,7 +321,13 @@ app.delete('/reports/:id', async (req, res) => {
 });
 app.get('/reports/:id', async (req, res) => {
     try {
-        const report = await Report.findByPk(req.params.id);
+        const report = await Report.findByPk(req.params.id, {
+            include: [{
+                model: ThreatStage,
+                as: 'threatStages',
+                include: [{ model: Observable, as: 'observables' }]
+            }]
+        });
         if (report) {
             res.json(report);
         } else {

@@ -57,8 +57,8 @@ const ReportsPage = () => {
                                         {report.updatedAt && ` - Updated: ${new Date(report.updatedAt).toLocaleDateString()}`}
                                         <div>Threat Stages:</div>
                                         <ul>
-                                            {report.ThreatStages && report.ThreatStages.length > 0 ? (
-                                                report.ThreatStages.map(ThreatStage => (
+                                            {report.threatStages && report.threatStages.length > 0 ? (
+                                                report.threatStages.map(ThreatStage => (
                                                     <li key={ThreatStage.id}>{ThreatStage.name}</li>
                                                 ))
                                             ) : (
@@ -69,6 +69,7 @@ const ReportsPage = () => {
                                 }
                             />
                             <Link to={`/reports/edit/${report.id}`}>Edit</Link>
+                            <Link to={`/reports/diagram/${report.id}`}>View Diagram</Link>
                         </ListItem>
                         <Divider variant="inset" component="li" />
                     </React.Fragment>

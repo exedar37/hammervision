@@ -32,14 +32,15 @@ fs
   });
 
 // Add the associations manually here
-db.Detection.belongsToMany(db.Observable, { through: 'DetectionObservables' });
-db.Observable.belongsToMany(db.Detection, { through: 'DetectionObservables' });
+db.Detection.belongsToMany(db.Observable, { through: 'DetectionObservables', as: 'observables' });
+db.Observable.belongsToMany(db.Detection, { through: 'DetectionObservables', as: 'detections' });
 
-db.ThreatStage.belongsToMany(db.Observable, { through: 'ThreatStageObservables' });
-db.Observable.belongsToMany(db.ThreatStage, { through: 'ThreatStageObservables' });
+db.ThreatStage.belongsToMany(db.Observable, { through: 'ThreatStageObservables', as: 'observables' });
+db.Observable.belongsToMany(db.ThreatStage, { through: 'ThreatStageObservables', as: 'threatStages'});
 
-db.Report.belongsToMany(db.ThreatStage, { through: 'ReportThreatStages' });
-db.ThreatStage.belongsToMany(db.Report, { through: 'ReportThreatStages' });
+db.Report.belongsToMany(db.ThreatStage, { through: 'ReportThreatStages', as: 'threatStages' });
+db.ThreatStage.belongsToMany(db.Report, { through: 'ReportThreatStages', as: 'reports' });
+
 
 // Check if any model has an associate method and execute it
 Object.keys(db).forEach(modelName => {
