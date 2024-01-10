@@ -1,11 +1,13 @@
 import React from 'react';
+import { Container, Button, List, ListItem, Checkbox, FormControlLabel, Typography, Divider, FormGroup, Paper} from '@mui/material';
+
 
 const HomePage = () => {
   return (
-    <div>
-      <h1>Home Page</h1>
-      <p>Welcome to the threat intelligence dashboard.</p>
-    </div>
+    <Paper style={{ padding: 16 }}>
+      <Typography variant="h4" style={{ marginBottom: 16 }}>Home Page</Typography>
+      <Typography variant="subtitle1">Welcome to the threat intelligence dashboard.</Typography>
+    </Paper>
   );
 };
 

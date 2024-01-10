@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from '../../axiosService';
-import { Typography, Paper, List, ListItem, ListItemText, Divider } from '@mui/material';
+import { Typography, Paper, List, ListItem, ListItemText, Divider, Button } from '@mui/material';
 
 const ThreatStagesPage = () => {
     const [threatStages, setThreatStages] = useState([]);
@@ -22,7 +22,9 @@ const ThreatStagesPage = () => {
     return (
         <Paper style={{ padding: 16 }}>
             <Typography variant="h4" style={{ marginBottom: 16 }}>Threat Stages</Typography>
-            <Link to="/threat-stages/add">Add New Threat Stage</Link>
+            <Button variant="contained" color="primary" component={Link} to="/threat-stages/add">
+                Add New Threat Stage
+            </Button>
             <List>
                 {threatStages.map(threatStage => (
                     <React.Fragment key={threatStage.id}>
