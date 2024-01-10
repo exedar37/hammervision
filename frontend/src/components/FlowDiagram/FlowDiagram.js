@@ -3,11 +3,23 @@ import { useParams } from 'react-router-dom';
 import ReactFlow, { Background, Controls, MiniMap } from 'reactflow';
 import 'reactflow/dist/style.css';
 import axios from '../../axiosService';
+import ObservableForm from '../../components/ObservableForm/ObservableForm';
+import ReportForm from '../../components/ReportForm/ReportForm';
+import ThreatStageForm from '../../components/ThreatStageForm/ThreatStageForm';
+import ModalComponent from '../../components/ModalComponent/ModalComponent'; // Import or define your modal component
+
 
 const FlowDiagram = () => {
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
   const { reportId } = useParams();
+  const [selectedNode, setSelectedNode] = useState(null); // State to track the selected node
+  
+  const onNodeClick = (event, node) => {
+    console.log("Node clicked:", node);
+    setSelectedNode(node); // Update state with clicked node
+  };
+
 
   useEffect(() => {
     const fetchReportData = async () => {
@@ -30,7 +42,7 @@ const FlowDiagram = () => {
     // Create a node for the report
     newNodes.push({
         id: reportData.id,
-        type: 'default',
+        type: 'report',
         data: { label: `Report: ${reportData.title}` },
         position: { x: 250, y: 25 }
     });
@@ -41,7 +53,7 @@ const FlowDiagram = () => {
         // Create a node for each threat stage
         newNodes.push({
             id: threatStageId,
-            type: 'default',
+            type: 'threatStage',
             data: { label: `Threat Stage: ${threatStage.name}` },
             position: { x: 250 * (index + 1), y: 100 }
         });
@@ -62,7 +74,7 @@ const FlowDiagram = () => {
             // Create a node for each observable instance
             newNodes.push({
                 id: observableId,
-                type: 'default',
+                type: 'observable',
                 data: { label: `Observable: ${observable.value}` },
                 position: { x: 250 * (index + 1), y: 200 + obsIndex * 50 }
             });
@@ -77,10 +89,64 @@ const FlowDiagram = () => {
             });
         });
     });
-
+    
     setNodes(newNodes);
     setEdges(newEdges);
+  };
+  const handleSave = (updatedData) => {
+    // Check if the selected node is still available
+    if (!selectedNode) return;
+
+    // Update the local state (nodes in the diagram) to reflect the changes
+    const updatedNodes = nodes.map(node => {
+        if (node.id === selectedNode.id) {
+            return {
+                ...node,
+                data: { ...node.data, label: `Updated Label: ${updatedData.title}` } // Modify according to your data structure
+            };
+        }
+        return node;
+    });
+    setNodes(updatedNodes);
+
+    // Close the modal
+    setSelectedNode(null);
 };
+
+
+  const renderFormBasedOnNodeType = () => {
+    if (!selectedNode) return null;
+
+    switch(selectedNode.type) {
+        case 'report':
+            return (
+                <ReportForm
+                    reportId = {selectedNode.id}
+                    onSave={handleSave}
+                    onCancel={() => setSelectedNode(null)}
+                />
+            );
+        case 'threatStage':
+            return (
+                <ThreatStageForm
+                    threatStageId={selectedNode.id}
+                    onSave={handleSave}
+                    onCancel={() => setSelectedNode(null)}
+                />
+            );
+        case 'observable':
+            return (
+                <ObservableForm
+                    observableId={selectedNode.id}
+                    onSave={handleSave}
+                    onCancel={() => setSelectedNode(null)}
+                />
+            );
+        default:
+            return null;
+    }
+  };
+
 
   return (
     <div style={{ height: 500 }}>
@@ -88,12 +154,22 @@ const FlowDiagram = () => {
         nodes={nodes}
         edges={edges}
         fitView
+        onNodeClick={onNodeClick}
         // Additional properties and event handlers as needed
       >
         <Background />
         <Controls />
         <MiniMap />
       </ReactFlow>
+      {selectedNode && (
+          <ModalComponent 
+          open={Boolean(selectedNode)}
+          onClose={() => setSelectedNode(null)}
+          title="Edit Node"
+        >
+          {renderFormBasedOnNodeType()}
+        </ModalComponent>
+            )}
     </div>
   );
 };
