@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from '../../axiosService';
-import { TextField, Button, FormControl, Checkbox, FormControlLabel, FormGroup } from '@mui/material';
+import { TextField, Button, FormControl, Checkbox, FormControlLabel, FormGroup, Paper } from '@mui/material';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
@@ -93,6 +93,7 @@ const ReportForm = () => {
     };
 
     return (
+        <Paper>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <FormControl fullWidth>
               <TextField
@@ -143,6 +144,7 @@ const ReportForm = () => {
                 </Button>
             </FormControl>
         </LocalizationProvider>
+        </Paper>
     );
 };
 

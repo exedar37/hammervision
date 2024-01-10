@@ -18,10 +18,8 @@ import DetectionForm from './components/DetectionForm/DetectionForm';
 import ThreatStagesPage from './components/ThreatStagesPage/ThreatStagesPage';
 import ThreatStageForm from './components/ThreatStageForm/ThreatStageForm';
 import ThreatDiagram  from './components/ThreatReportDiagram/ThreatReportDiagram';
+import FlowDiagram  from './components/FlowDiagram/FlowDiagram';
 
-// You can customize the theme or direct styles here
-import { ThemeProvider } from '@mui/material/styles';
-import theme from './theme'; // Ensure this path is correct
 
 function App() {
   return (
@@ -38,13 +36,14 @@ function App() {
               <Button color="inherit" component={Link} to="/threat-stages">Threat Stages</Button>
           </Toolbar>
         </AppBar>
-        <Container sx={{ marginTop: '20px', backgroundColor: theme.palette.background.default }}>
+        <Container >
           <Routes>
             <Route exact path="/" element={<HomePage />} />
             <Route exact path="/reports" element={<ReportsPage />} />
             <Route path="/reports/add" element={<ReportForm />} />
             <Route path="/reports/edit/:id" element={<ReportForm />} />
             <Route path="/reports/diagram/:reportId" element={<ThreatDiagram />} />
+            <Route path="/reports/flowdiagram/:reportId" element={<FlowDiagram />} />
             <Route exact path="/observables" element={<ObservablesPage />} />
             <Route path="/observables/add" element={<ObservableForm />} />
             <Route path="/observables/edit/:id" element={<ObservableForm />} />

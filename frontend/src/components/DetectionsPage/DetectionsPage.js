@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from '../../axiosService';
-import { Typography, Paper, List, ListItem, ListItemText, Divider } from '@mui/material';
+import { Typography, Paper, List, ListItem, ListItemText, Divider, Button } from '@mui/material';
 
 const DetectionsPage = () => {
     const [detections, setDetections] = useState([]);
@@ -22,7 +22,9 @@ const DetectionsPage = () => {
     return (
         <Paper style={{ padding: 16 }}>
             <Typography variant="h4" style={{ marginBottom: 16 }}>Detections</Typography>
-            <Link to="/detections/add">Add New Detection</Link>
+            <Button variant="contained" color="primary" component={Link} to="/detections/add">
+                Add New Detection
+            </Button>
             <List>
                 {detections.map(detection => (
                     <React.Fragment key={detection.id}>

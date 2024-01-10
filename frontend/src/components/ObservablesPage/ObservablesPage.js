@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from '../../axiosService.js'; // Adjust the path as necessary
-import { Container, Button, List, ListItem, Checkbox, FormControlLabel, Typography, Divider, FormGroup} from '@mui/material';
+import { Container, Button, List, ListItem, Checkbox, FormControlLabel, Typography, Divider, FormGroup, Paper} from '@mui/material';
 
 
 const ObservablesPage = () => {
@@ -109,7 +109,7 @@ const ObservablesPage = () => {
     });
 
     return (
-        <Container >
+        <Paper >
             <Typography variant="h4" gutterBottom>Observables</Typography>
             <Button variant="contained" color="primary" component={Link} to="/observables/add">
                 Add New Observable
@@ -189,7 +189,7 @@ const ObservablesPage = () => {
                 Delete Selected
             </Button>
 
-        </Container>
+        </Paper>
     );
 };
 

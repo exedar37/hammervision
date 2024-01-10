@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from '../../axiosService';
-import { Typography, Paper, List, ListItem, ListItemText, Divider, TextField, Button } from '@mui/material';
+import { Typography, Paper, List, ListItem, ListItemText, Divider, TextField, Button} from '@mui/material';
+import Box from '@mui/material/Box';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
@@ -29,7 +30,9 @@ const ReportsPage = () => {
     return (
         <Paper style={{ padding: 16 }}>
             <Typography variant="h4" style={{ marginBottom: 16 }}>Reports</Typography>
-            <Link to="/reports/add">Add New Report</Link>
+            <Button variant="contained" color="primary" component={Link} to="/reports/add">
+                Add New Report
+            </Button>
 
             <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DatePicker
@@ -68,8 +71,10 @@ const ReportsPage = () => {
                                     </>
                                 }
                             />
-                            <Link to={`/reports/edit/${report.id}`}>Edit</Link>
-                            <Link to={`/reports/diagram/${report.id}`}>View Diagram</Link>
+                            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+                                <Link to={`/reports/edit/${report.id}`}>Edit</Link>
+                                <Link to={`/reports/flowdiagram/${report.id}`}>View Diagram</Link>
+                            </Box>
                         </ListItem>
                         <Divider variant="inset" component="li" />
                     </React.Fragment>
