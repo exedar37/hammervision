@@ -5,37 +5,31 @@ import { TextField, Button, FormControl, Checkbox, FormControlLabel, FormGroup, 
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
-const ReportForm = () => {
-    const [report, setReport] = useState({
+const ReportForm = ({ reportId = null, onSave = null, onCancel = null }) => {
+    const params = useParams();
+    const id = reportId || params.id;  // Use reportId first, if not available, then use id from params
+    const navigate = useNavigate();
+    const [report, setReport] = useState( {
         sourceOrganization: '',
         title: '',
-        publicationDate: null, // Keep the publication date here
+        publicationDate: null,
         threatStages: []
     });
     const [allThreatStages, setAllThreatStages] = useState([]);
-    const { id } = useParams();
-    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchReport = async () => {
             if (id) {
                 try {
                     const response = await axios.get(`/reports/${id}`);
-                    const fetchedReport = response.data;
-                    // Ensure that threatStages is an array
-                    if (!fetchedReport.threatStages) {
-                      fetchedReport.threatStages = [];
-                    }
-                    // Parse the publicationDate to Date object if it's not null
-                    if (fetchedReport.publicationDate) {
-                      fetchedReport.publicationDate = new Date(fetchedReport.publicationDate);
-                    }
-                    setReport(fetchedReport);
+
+                    setReport(response.data);
                 } catch (error) {
                     console.error("Error fetching report: ", error);
                 }
             }
         };
+        fetchReport();
 
         const fetchThreatStages = async () => {
             try {
@@ -45,8 +39,6 @@ const ReportForm = () => {
                 console.error("Error fetching threat stages: ", error);
             }
         };
-
-        fetchReport();
         fetchThreatStages();
     }, [id]);
 
@@ -57,7 +49,6 @@ const ReportForm = () => {
     const handleThreatStageChange = (event) => {
         const selectedThreatStageId = event.target.value;
         const isSelected = event.target.checked;
-
         if (isSelected) {
             setReport({ 
                 ...report, 
@@ -78,25 +69,45 @@ const ReportForm = () => {
                 ...report,
                 publicationDate: report.publicationDate
             };
-            if (id) {
-                await axios.put(`/reports/${id}`, reportData);
+            let response;
+            console.log(`saving to report id ${report.id}`)
+            console.log(`reportId value: ${reportId}`)
+            console.log(reportData)
+            if (report.id) {
+                response = await axios.put(`/reports/${report.id}`, reportData);
             } else {
-                await axios.post('/reports', reportData);
+                response = await axios.post('/reports', reportData);
             }
-            navigate('/reports');
-        } catch (error) {
-            console.error("Error saving report: ", error);
-        }
+            console.log('Report saved:', response.data);
+            // If you're using the form in a modal, call onCancel to close it
+            if (onCancel) {
+                onCancel();
+                } else {
+                    navigate('/reports');
+                }            
+            }
+            catch (error) {
+                console.error("Error saving report: ", error);
+            }
     };
+
     const handlePublicationDateChange = (newValue) => {
       setReport({ ...report, publicationDate: newValue });
     };
 
+    const handleCancel = () => {
+        if (onCancel) {
+            onCancel();
+        } else {
+            navigate('/reports');
+        }
+    };
+
     return (
         <Paper>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <FormControl fullWidth>
-              <TextField
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <FormControl fullWidth>
+                <TextField
                     label="Source Organization"
                     name="sourceOrganization"
                     value={report.sourceOrganization}
@@ -124,7 +135,7 @@ const ReportForm = () => {
                         <FormControlLabel
                             control={
                                 <Checkbox
-                                    checked={report.threatStages.some(ts => ts.id === threatStage.id)}
+                                    checked={report.threatStages?.some(ts => ts.id === threatStage.id)}
                                     onChange={handleThreatStageChange}
                                     value={threatStage.id}
                                 />
@@ -134,18 +145,22 @@ const ReportForm = () => {
                         />
                     ))}
                 </FormGroup>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleSubmit}
-                    style={{ marginTop: '20px' }}
-                >
-                    Save Report
-                </Button>
-            </FormControl>
-        </LocalizationProvider>
+                    <Button onClick={handleCancel} style={{ marginTop: '20px' }}>
+                        Cancel
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleSubmit}
+                        style={{ marginTop: '20px' }}
+                    >
+                        Save Report
+                    </Button>
+                </FormControl>
+            </LocalizationProvider>
         </Paper>
     );
 };
 
 export default ReportForm;
+
