@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from '../../axiosService';
 import { Container, TextField, Button, Typography, MenuItem, FormControl, Autocomplete, 
-    Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle  } from '@mui/material';
+    Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Paper  } from '@mui/material';
 
-const ObservableForm = () => {
+const ObservableForm = ({ observableId = null, onSave = null, onCancel = null }) => {
+    const params = useParams();
     const navigate = useNavigate();
-    const { id } = useParams(); // id for editing
-    const isEdit = id !== undefined;
+    const actualId = observableId || params.id;
+    const isEdit = actualId !== undefined;    
 
     const [observable, setObservable] = useState({
         category: '',
@@ -30,7 +31,7 @@ const ObservableForm = () => {
 
     const [openDialog, setOpenDialog] = useState(false);
     const handleDelete = () => {
-        axios.delete(`/observables/${id}`)
+        axios.delete(`/observables/${actualId}`)
         .then(response => {
             // Handle the successful deletion
             console.log('Observable deleted successfully');
@@ -48,32 +49,46 @@ const ObservableForm = () => {
     useEffect(() => {
         if (isEdit) {
             // Fetch the observable data for editing
-            axios.get(`/observables/${id}`)
+            axios.get(`/observables/${actualId}`)
                 .then(response => {
                     setObservable(response.data);
                 })
                 .catch(error => console.error("Error fetching observable: ", error));
         }
-    }, [id, isEdit]);
+    }, [actualId, isEdit]);
 
     const handleChange = (event) => {
         const { name, value } = event.target;
         setObservable({ ...observable, [name]: value });
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        const apiCall = isEdit ? axios.put(`/observables/${id}`, observable) : axios.post('/observables', observable);
-        
-        apiCall.then(() => {
-            navigate('/observables');
-        }).catch(error => {
+        try {
+            let response;
+            if (isEdit) {
+                response = await axios.put(`/observables/${actualId}`, observable);
+            } else {
+                response = await axios.post('/observables', observable);
+            }        
+            if (onSave) {
+                onSave(response.data);
+            } else {
+                navigate('/observables');
+            }
+        } catch (error) {
             console.error("Error submitting observable: ", error);
-        });
+        }
     };
-
+    const handleCancel = () => {
+        if (onCancel) {
+            onCancel();
+        } else {
+            navigate('/observables');
+        }
+    };
     return (
-        <Container maxWidth="sm">
+        <Paper maxWidth="sm">
             <Typography variant="h6">{isEdit ? 'Edit Observable' : 'Add Observable'}</Typography>
             <form onSubmit={handleSubmit}>
                 <TextField
@@ -175,7 +190,7 @@ const ObservableForm = () => {
                 </DialogActions>
             </Dialog>
 
-        </Container>
+        </Paper>
     );
 };
 

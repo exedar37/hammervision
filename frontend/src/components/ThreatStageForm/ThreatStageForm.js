@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from '../../axiosService';
-import { TextField, Button, Autocomplete, Checkbox, FormControlLabel, FormGroup, Container, Typography, MenuItem } from '@mui/material';
+import { TextField, Button, Autocomplete, Container, Typography, Paper } from '@mui/material';
 
-const ThreatStageForm = () => {
+const ThreatStageForm = ({ threatStageId = null, onSave = null, onCancel = null }) => {
+    const params = useParams();
+    const navigate = useNavigate();
     const [threatStage, setThreatStage] = useState({
         name: '',
         description: '',
         mitreAttackTechnique: '',
         observables: []
     });
-    //id, name, description, mitreAttackTechnique
     const [observables, setObservables] = useState([]);
-    const { id } = useParams();
-    const navigate = useNavigate();
-    const isEdit = id !== undefined;
+    const actualId = threatStageId || params.id;
+    const isEdit = actualId !== undefined;
 
     useEffect(() => {
         const fetchObservables = async () => {
@@ -25,24 +25,23 @@ const ThreatStageForm = () => {
                 console.error("Error fetching observables: ", error);
             }
         };
-        if (isEdit) {
 
-            const fetchThreatStage = async () => {
-                if (id) {
-                    try {
-                        const response = await axios.get(`/threat-stages/${id}`);
-                        response.data.observables = response.data.observables || [];
-                        setThreatStage(response.data);
-                    } catch (error) {
-                        console.error("Error fetching threat stage: ", error);
-                    }
+        const fetchThreatStage = async () => {
+            if (actualId) {
+                try {
+                    const response = await axios.get(`/threat-stages/${actualId}`);
+                    setThreatStage(response.data);
+                } catch (error) {
+                    console.error("Error fetching threat stage: ", error);
                 }
-            };
+            }
+        };
 
+        fetchObservables();
+        if (isEdit) {
             fetchThreatStage();
         }
-        fetchObservables();
-        }, [id, isEdit]);
+    }, [actualId, isEdit]);
 
     const handleChange = (event) => {
         setThreatStage({ ...threatStage, [event.target.name]: event.target.value });
@@ -51,20 +50,40 @@ const ThreatStageForm = () => {
     const handleObservableChange = (event, value) => {
         setThreatStage({ ...threatStage, observables: value });
     };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            const apiCall = isEdit ? axios.put(`/threat-stages/${id}`, threatStage) : axios.post('/threat-stages', threatStage);
-            await apiCall;
-            navigate('/threat-stages');
+            let response;
+            if (isEdit) {
+                response = await axios.put(`/threat-stages/${actualId}`, threatStage);
+            } else {
+                response = await axios.post('/threat-stages', threatStage);
+            }
+
+            if (onSave) {
+                onSave(response.data);
+            } else {
+                navigate('/threat-stages');
+            }
         } catch (error) {
             console.error("Error saving threat stage: ", error);
         }
     };
 
+    const handleCancel = () => {
+        if (onCancel) {
+            onCancel();
+        } else {
+            navigate('/threat-stages');
+        }
+    };
+
     return (
-        <Container maxWidth="sm">
-            <Typography variant="h4" style={{ margin: '20px 0' }}>{isEdit ? 'Edit Threat Stage' : 'Add Threat Stage'}</Typography>
+        <Paper maxWidth="sm">
+            <Typography variant="h4" style={{ margin: '20px 0' }}>
+                {isEdit ? 'Edit Threat Stage' : 'Add Threat Stage'}
+            </Typography>
             <form onSubmit={handleSubmit}>
                 <TextField
                     fullWidth
@@ -101,8 +120,11 @@ const ThreatStageForm = () => {
                 <Button variant="contained" color="primary" type="submit" style={{ marginTop: '20px' }}>
                     {isEdit ? 'Update' : 'Create'}
                 </Button>
+                <Button onClick={handleCancel} style={{ marginTop: '20px' }}>
+                    Cancel
+                </Button>
             </form>
-        </Container>
+        </Paper>
     );
 };
 

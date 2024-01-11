@@ -52,10 +52,13 @@ const FlowDiagram = () => {
 
         // Create a node for each threat stage
         newNodes.push({
-            id: threatStageId,
-            type: 'threatStage',
-            data: { label: `Threat Stage: ${threatStage.name}` },
-            position: { x: 250 * (index + 1), y: 100 }
+          id: threatStageId,
+          type: 'threatStage',
+          data: { 
+              label: `Threat Stage: ${threatStage.name}`,
+              actualId: threatStage.id  // Store the actual threat stage ID
+          },
+          position: { x: 250 * (index + 1), y: 100 }
         });
 
         // Connect the report to each threat stage
@@ -69,21 +72,24 @@ const FlowDiagram = () => {
 
         threatStage.observables.forEach((observable, obsIndex) => {
             // Create a unique ID for each observable instance within its threat stage
-            const observableId = `observable-${threatStage.id}-${observable.id}`;
+            const observableNodeId = `observable-${threatStage.id}-${observable.id}`;
 
             // Create a node for each observable instance
             newNodes.push({
-                id: observableId,
+                id: observableNodeId,
                 type: 'observable',
-                data: { label: `Observable: ${observable.value}` },
-                position: { x: 250 * (index + 1), y: 200 + obsIndex * 50 }
+                data: {             
+                        label: `Observable: ${observable.value}`,
+                        actualId: observable.id  // Store the actual observable ID
+                      },
+                position: { x: 250 * (index + 1), y: 200 + obsIndex * 100 }
             });
 
             // Connect each threat stage to its respective observables
             newEdges.push({
-                id: `e-${threatStageId}-${observableId}`,
+                id: `e-${threatStageId}-${observableNodeId}`,
                 source: threatStageId,
-                target: observableId,
+                target: observableNodeId,
                 type: 'smoothstep',
                 animated: true
             });
@@ -129,7 +135,7 @@ const FlowDiagram = () => {
         case 'threatStage':
             return (
                 <ThreatStageForm
-                    threatStageId={selectedNode.id}
+                    threatStageId={selectedNode.data.actualId}
                     onSave={handleSave}
                     onCancel={() => setSelectedNode(null)}
                 />
@@ -137,7 +143,7 @@ const FlowDiagram = () => {
         case 'observable':
             return (
                 <ObservableForm
-                    observableId={selectedNode.id}
+                    observableId={selectedNode.data.actualId}
                     onSave={handleSave}
                     onCancel={() => setSelectedNode(null)}
                 />
